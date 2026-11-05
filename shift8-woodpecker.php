@@ -10,7 +10,7 @@
  * Author URI: https://www.shift8web.ca
  * License: GPLv3
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
- * Text Domain: shift8-woodpecker
+ * Text Domain: shift8-woodpecker-ci
  *
  * @package Shift8\Woodpecker
  */

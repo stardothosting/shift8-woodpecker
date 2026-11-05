@@ -1,6 +1,6 @@
 <?php
 /**
- * Deployment use-cases: trigger, track, cancel. No deployment logic lives
+ * Deployment use-cases: trigger and track. No deployment logic lives
  * here; Woodpecker and its pipeline script do the actual work.
  *
  * @package Shift8\Woodpecker
@@ -78,7 +78,7 @@ class Deployment {
 		}
 
 		if ( get_transient( self::LOCK_KEY ) ) {
-			return new \WP_Error( 'shift8_woodpecker_locked', __( 'A deployment request was just submitted. Please wait a few seconds.', 'shift8-woodpecker' ) );
+			return new \WP_Error( 'shift8_woodpecker_locked', __( 'A deployment request was just submitted. Please wait a few seconds.', 'shift8-woodpecker-ci' ) );
 		}
 
 		$current = $this->refresh();
@@ -93,7 +93,7 @@ class Deployment {
 				'shift8_woodpecker_active',
 				sprintf(
 					/* translators: 1: pipeline number, 2: pipeline status. */
-					__( 'Pipeline #%1$d is still %2$s. Wait for it to finish or cancel it first.', 'shift8-woodpecker' ),
+					__( 'Pipeline #%1$d is still %2$s. Wait for it to finish before starting another.', 'shift8-woodpecker-ci' ),
 					$current['number'],
 					$current['state']
 				)
@@ -149,6 +149,19 @@ class Deployment {
 			$state['started']  = $pipeline->started();
 			$state['finished'] = $pipeline->finished();
 			update_option( self::STATE_OPTION, $state, false );
+
+			// The stored status changes exactly once when the pipeline stops, so the
+			// finish is logged once, attributed to whoever started the deployment.
+			if ( ! $pipeline->isActive() ) {
+				$this->activity->record(
+					$state['user_id'],
+					ActivityLog::DEPLOY_FINISHED,
+					array(
+						'pipeline' => $state['number'],
+						'details'  => $pipeline->state(),
+					)
+				);
+			}
 			$this->logger->log(
 				$pipeline->isFinal()
 					? sprintf( 'Woodpecker pipeline #%d completed: %s.', $state['number'], $pipeline->state() )
@@ -156,28 +169,6 @@ class Deployment {
 			);
 		}
 		return $this->describe( $state );
-	}
-
-	/**
-	 * Cancel the tracked pipeline.
-	 *
-	 * @return array<string,mixed>|\WP_Error
-	 */
-	public function cancel() {
-		$state = $this->last();
-		if ( null === $state ) {
-			return new \WP_Error( 'shift8_woodpecker_nothing_to_cancel', __( 'There is no tracked deployment to cancel.', 'shift8-woodpecker' ) );
-		}
-		$result = $this->client->cancelPipeline( $state['number'] );
-		if ( is_wp_error( $result ) ) {
-			return $result;
-		}
-		$this->logger->log( sprintf( 'Woodpecker pipeline #%d cancellation requested.', $state['number'] ) );
-		$this->activity->record( get_current_user_id(), ActivityLog::CANCELLED, array( 'pipeline' => $state['number'] ) );
-
-		// Woodpecker finalises the status asynchronously; the next poll picks it up.
-		$refreshed = $this->refresh();
-		return is_wp_error( $refreshed ) || null === $refreshed ? $this->describe( $state ) : $refreshed;
 	}
 
 	/**
@@ -210,20 +201,10 @@ class Deployment {
 	public function describe( array $state ): array {
 		$normalized = Pipeline::normalizeStatus( $state['status'] );
 		return array(
-			'number'   => (int) $state['number'],
-			'state'    => $normalized,
-			'active'   => Pipeline::PENDING === $normalized || Pipeline::RUNNING === $normalized,
-			'started'  => $this->formatTime( (int) $state['started'] ),
-			'finished' => $this->formatTime( (int) $state['finished'] ),
-			'url'      => $this->client->pipelineUrl( (int) $state['number'] ),
+			'number' => (int) $state['number'],
+			'state'  => $normalized,
+			'active' => Pipeline::PENDING === $normalized || Pipeline::RUNNING === $normalized,
 		);
-	}
-
-	private function formatTime( int $timestamp ): string {
-		if ( $timestamp < 1 ) {
-			return '';
-		}
-		return (string) wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $timestamp );
 	}
 
 	private function message( int $user_id ): string {

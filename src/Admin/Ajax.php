@@ -1,7 +1,7 @@
 <?php
 /**
  * AJAX endpoints. The browser only submits an intent ("deploy", "status",
- * "cancel", "test"); target URL, repository, branch, workflow and token are
+ * "test"); target URL, repository, branch, workflow and token are
  * never read from the request.
  *
  * @package Shift8\Woodpecker
@@ -38,7 +38,6 @@ class Ajax {
 	public function register(): void {
 		add_action( 'wp_ajax_shift8_woodpecker_deploy', array( $this, 'deploy' ) );
 		add_action( 'wp_ajax_shift8_woodpecker_status', array( $this, 'status' ) );
-		add_action( 'wp_ajax_shift8_woodpecker_cancel', array( $this, 'cancel' ) );
 		add_action( 'wp_ajax_shift8_woodpecker_schedule', array( $this, 'schedule' ) );
 		add_action( 'wp_ajax_shift8_woodpecker_unschedule', array( $this, 'unschedule' ) );
 		add_action( 'wp_ajax_shift8_woodpecker_test', array( $this, 'test' ) );
@@ -52,11 +51,6 @@ class Ajax {
 	public function status(): void {
 		$this->authorize( Plugin::deployCapability() );
 		$this->respond( $this->deployment->refresh() );
-	}
-
-	public function cancel(): void {
-		$this->authorize( Plugin::deployCapability() );
-		$this->respond( $this->deployment->cancel() );
 	}
 
 	public function schedule(): void {
@@ -99,10 +93,10 @@ class Ajax {
 	 */
 	private function authorize( string $capability ): void {
 		if ( ! current_user_can( $capability ) ) {
-			$this->fail( __( 'You are not allowed to do that.', 'shift8-woodpecker' ), 403 );
+			$this->fail( __( 'You are not allowed to do that.', 'shift8-woodpecker-ci' ), 403 );
 		}
 		if ( ! check_ajax_referer( self::NONCE_ACTION, 'nonce', false ) ) {
-			$this->fail( __( 'Your session has expired. Reload the page and try again.', 'shift8-woodpecker' ), 403 );
+			$this->fail( __( 'Your session has expired. Reload the page and try again.', 'shift8-woodpecker-ci' ), 403 );
 		}
 	}
 

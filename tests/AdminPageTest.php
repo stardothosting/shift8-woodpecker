@@ -58,4 +58,37 @@ class AdminPageTest extends TestCase {
 		$this->expectException( \RuntimeException::class );
 		$this->render();
 	}
+
+	private function adminPage(): AdminPage {
+		$config = new Config();
+		return new AdminPage(
+			new DeploymentPage( $config, $this->deployment(), $this->scheduler(), $this->activity() ),
+			new SettingsPage( $config )
+		);
+	}
+
+	public function testCreatesTheSharedShift8MenuOnlyWhenAbsent(): void {
+		unset( $GLOBALS['admin_page_hooks'] );
+		$this->adminPage()->addMenu();
+		$this->assertSame( array( 'top', 'sub' ), array_column( Env::$menus, 'type' ) );
+		$this->assertSame( 'shift8-woodpecker', Env::$menus[1]['slug'] );
+		$this->assertSame( 'shift8-settings', Env::$menus[1]['parent'] );
+
+		Env::$menus                                     = array();
+		$GLOBALS['admin_page_hooks']['shift8-settings'] = 'shift8'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride -- simulating another plugin's menu.
+		$this->adminPage()->addMenu();
+		$this->assertSame( array( 'sub' ), array_column( Env::$menus, 'type' ), 'Another Shift8 plugin already created the menu.' );
+		unset( $GLOBALS['admin_page_hooks'] );
+	}
+
+	public function testAssetsOnlyLoadOnThisPluginsPage(): void {
+		$page = $this->adminPage();
+
+		$page->enqueue( 'dashboard' );
+		$this->assertSame( array(), Env::$localized );
+		$this->assertStringContainsString( 'img/shift8pluginicon.png', Env::$inlineCss[0], 'The menu icon is needed on every admin screen.' );
+
+		$page->enqueue( 'shift8_page_shift8-woodpecker' );
+		$this->assertArrayHasKey( 'shift8Woodpecker', Env::$localized );
+	}
 }

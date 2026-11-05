@@ -44,7 +44,7 @@ class Client {
 
 		$data = $this->request( 'POST', $this->repoPath( '/pipelines' ), $body );
 		if ( is_wp_error( $data ) ) {
-			return $this->rewrap( $data, 'shift8_woodpecker_trigger_rejected', __( 'Woodpecker did not accept the deployment.', 'shift8-woodpecker' ) );
+			return $this->rewrap( $data, 'shift8_woodpecker_trigger_rejected', __( 'Woodpecker did not accept the deployment.', 'shift8-woodpecker-ci' ) );
 		}
 		return $this->toPipeline( $data );
 	}
@@ -64,20 +64,6 @@ class Client {
 	 */
 	public function getLatestPipeline() {
 		return $this->fetchPipeline( 'latest' );
-	}
-
-	/**
-	 * Cancel a running pipeline.
-	 *
-	 * @param int $number Pipeline number.
-	 * @return true|\WP_Error
-	 */
-	public function cancelPipeline( int $number ) {
-		$data = $this->request( 'POST', $this->repoPath( '/pipelines/' . $number . '/cancel' ) );
-		if ( is_wp_error( $data ) ) {
-			return $this->rewrap( $data, 'shift8_woodpecker_cancel_failed', __( 'Woodpecker could not cancel the deployment.', 'shift8-woodpecker' ) );
-		}
-		return true;
 	}
 
 	/**
@@ -119,8 +105,8 @@ class Client {
 			return $user;
 		}
 		$lines = array(
-			__( 'Connection successful.', 'shift8-woodpecker' ),
-			__( 'Authenticated with Woodpecker.', 'shift8-woodpecker' ),
+			__( 'Connection successful.', 'shift8-woodpecker-ci' ),
+			__( 'Authenticated with Woodpecker.', 'shift8-woodpecker-ci' ),
 		);
 
 		$repo = $this->request( 'GET', $this->repoPath( '' ) );
@@ -128,36 +114,26 @@ class Client {
 			return $repo;
 		}
 		/* translators: %d: Woodpecker repository ID. */
-		$lines[] = sprintf( __( 'Repository %d accessible.', 'shift8-woodpecker' ), $this->config->repoId() );
+		$lines[] = sprintf( __( 'Repository %d accessible.', 'shift8-woodpecker-ci' ), $this->config->repoId() );
 
 		$workflow = $this->config->workflow();
 		if ( '' !== $workflow ) {
 			$workflows = $this->getWorkflows();
 			if ( is_wp_error( $workflows ) ) {
 				/* translators: %s: workflow name. */
-				$lines[] = sprintf( __( 'Could not verify workflow "%s": the workflow list is unavailable on this Woodpecker version or branch.', 'shift8-woodpecker' ), $workflow );
+				$lines[] = sprintf( __( 'Could not verify workflow "%s": the workflow list is unavailable on this Woodpecker version or branch.', 'shift8-woodpecker-ci' ), $workflow );
 			} elseif ( in_array( $workflow, $workflows, true ) ) {
 				/* translators: %s: workflow name. */
-				$lines[] = sprintf( __( 'Workflow "%s" available.', 'shift8-woodpecker' ), $workflow );
+				$lines[] = sprintf( __( 'Workflow "%s" available.', 'shift8-woodpecker-ci' ), $workflow );
 			} else {
 				return new \WP_Error(
 					'shift8_woodpecker_workflow_missing',
 					/* translators: %s: workflow name. */
-					sprintf( __( 'Workflow "%s" was not found on the configured branch.', 'shift8-woodpecker' ), $workflow )
+					sprintf( __( 'Workflow "%s" was not found on the configured branch.', 'shift8-woodpecker-ci' ), $workflow )
 				);
 			}
 		}
 		return $lines;
-	}
-
-	/**
-	 * Link to the pipeline in the Woodpecker web UI. Kept in one place because
-	 * the UI routes are not part of the stable API.
-	 *
-	 * @param int $number Pipeline number.
-	 */
-	public function pipelineUrl( int $number ): string {
-		return $this->config->baseUrl() . '/repos/' . $this->config->repoId() . '/pipeline/' . $number;
 	}
 
 	/**
@@ -167,7 +143,7 @@ class Client {
 	private function fetchPipeline( string $selector ) {
 		$data = $this->request( 'GET', $this->repoPath( '/pipelines/' . $selector ) );
 		if ( is_wp_error( $data ) ) {
-			return $this->rewrap( $data, 'shift8_woodpecker_status_failed', __( 'Could not retrieve the pipeline status from Woodpecker.', 'shift8-woodpecker' ) );
+			return $this->rewrap( $data, 'shift8_woodpecker_status_failed', __( 'Could not retrieve the pipeline status from Woodpecker.', 'shift8-woodpecker-ci' ) );
 		}
 		return $this->toPipeline( $data );
 	}
@@ -179,7 +155,7 @@ class Client {
 	private function toPipeline( $data ) {
 		$pipeline = Pipeline::fromArray( $data );
 		if ( null === $pipeline ) {
-			return new \WP_Error( 'shift8_woodpecker_invalid_response', __( 'Woodpecker returned a response that does not look like a pipeline.', 'shift8-woodpecker' ) );
+			return new \WP_Error( 'shift8_woodpecker_invalid_response', __( 'Woodpecker returned a response that does not look like a pipeline.', 'shift8-woodpecker-ci' ) );
 		}
 		return $pipeline;
 	}
@@ -242,7 +218,7 @@ class Client {
 				'shift8_woodpecker_http',
 				sprintf(
 					/* translators: %s: error message from the HTTP layer. */
-					__( 'Could not reach Woodpecker: %s', 'shift8-woodpecker' ),
+					__( 'Could not reach Woodpecker: %s', 'shift8-woodpecker-ci' ),
 					$this->scrub( $response->get_error_message() )
 				)
 			);
@@ -260,7 +236,7 @@ class Client {
 		}
 		$decoded = json_decode( $raw, true );
 		if ( ! is_array( $decoded ) ) {
-			return new \WP_Error( 'shift8_woodpecker_invalid_response', __( 'Woodpecker returned a response that is not valid JSON.', 'shift8-woodpecker' ) );
+			return new \WP_Error( 'shift8_woodpecker_invalid_response', __( 'Woodpecker returned a response that is not valid JSON.', 'shift8-woodpecker-ci' ) );
 		}
 		return $decoded;
 	}
@@ -268,11 +244,11 @@ class Client {
 	private function statusError( int $status, string $raw ): \WP_Error {
 		switch ( $status ) {
 			case 401:
-				return new \WP_Error( 'shift8_woodpecker_auth', __( 'Woodpecker rejected the API token (HTTP 401). Check that the token is valid and has not expired.', 'shift8-woodpecker' ) );
+				return new \WP_Error( 'shift8_woodpecker_auth', __( 'Woodpecker rejected the API token (HTTP 401). Check that the token is valid and has not expired.', 'shift8-woodpecker-ci' ) );
 			case 403:
-				return new \WP_Error( 'shift8_woodpecker_forbidden', __( 'The Woodpecker token is not permitted to perform this action (HTTP 403).', 'shift8-woodpecker' ) );
+				return new \WP_Error( 'shift8_woodpecker_forbidden', __( 'The Woodpecker token is not permitted to perform this action (HTTP 403).', 'shift8-woodpecker-ci' ) );
 			case 404:
-				return new \WP_Error( 'shift8_woodpecker_not_found', __( 'Woodpecker could not find the requested repository or pipeline (HTTP 404). Check the repository ID.', 'shift8-woodpecker' ) );
+				return new \WP_Error( 'shift8_woodpecker_not_found', __( 'Woodpecker could not find the requested repository or pipeline (HTTP 404). Check the repository ID.', 'shift8-woodpecker-ci' ) );
 		}
 
 		$detail = '';
@@ -285,7 +261,7 @@ class Client {
 			trim(
 				sprintf(
 					/* translators: %d: HTTP status code. */
-					__( 'Woodpecker returned HTTP %d.', 'shift8-woodpecker' ),
+					__( 'Woodpecker returned HTTP %d.', 'shift8-woodpecker-ci' ),
 					$status
 				) . ' ' . $detail
 			)

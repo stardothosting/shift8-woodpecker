@@ -56,24 +56,49 @@ class ActivityLogTest extends TestCase {
 		$this->assertCount( 1, Env::$logRows );
 	}
 
-	public function testCancelIsLogged(): void {
+	public function testFinishIsLoggedOnceWithStatusForTheStartingUser(): void {
 		Env::$options['shift8_woodpecker_last_pipeline'] = array(
-			'number' => 5,
-			'status' => 'running',
+			'number'  => 5,
+			'status'  => 'running',
+			'user_id' => 9,
 		);
-		Env::queue( 200, array() );
 		Env::queue(
 			200,
 			array(
 				'number' => 5,
-				'status' => 'killed',
+				'status' => 'failure',
+			)
+		);
+		$deployment = $this->deployment();
+
+		$deployment->refresh();
+		$deployment->refresh();
+
+		$this->assertCount( 1, Env::$logRows, 'No further API call or log row once the pipeline is final.' );
+		$this->assertSame( ActivityLog::DEPLOY_FINISHED, Env::$logRows[0]['event'] );
+		$this->assertSame( 9, Env::$logRows[0]['user_id'] );
+		$this->assertSame( 5, Env::$logRows[0]['pipeline_number'] );
+		$this->assertSame( 'failure', Env::$logRows[0]['details'] );
+		$this->assertSame( 'Deployment finished', $this->activity()->recent( 1 )[0]['action'] );
+	}
+
+	public function testRunningStatusDoesNotLogAFinish(): void {
+		Env::$options['shift8_woodpecker_last_pipeline'] = array(
+			'number'  => 5,
+			'status'  => 'pending',
+			'user_id' => 9,
+		);
+		Env::queue(
+			200,
+			array(
+				'number' => 5,
+				'status' => 'running',
 			)
 		);
 
-		$this->deployment()->cancel();
+		$this->deployment()->refresh();
 
-		$this->assertSame( ActivityLog::CANCELLED, Env::$logRows[0]['event'] );
-		$this->assertSame( 5, Env::$logRows[0]['pipeline_number'] );
+		$this->assertSame( array(), Env::$logRows );
 	}
 
 	public function testRecentReturnsNewestFirstWithLabelsAndLimit(): void {

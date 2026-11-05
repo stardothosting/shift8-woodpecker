@@ -43,55 +43,22 @@
 		}
 	}
 
-	function row( container, label, value ) {
-		var p = document.createElement( 'p' );
-		var strong = document.createElement( 'strong' );
-		strong.textContent = label + ': ';
-		p.appendChild( strong );
-		p.appendChild( document.createTextNode( value ) );
-		container.appendChild( p );
-		return p;
-	}
-
+	// A finished deployment is reported in the activity log; here we only
+	// block a second start while one is running.
 	function render( pipeline ) {
-		var box = el( 's8w-pipeline' );
-		var cancel = el( 's8w-cancel' );
 		var deploy = el( 's8w-deploy' );
+		var active = !! ( pipeline && pipeline.active );
+		if ( deploy ) {
+			deploy.disabled = active;
+		}
+		var box = el( 's8w-message' );
 		if ( ! box ) {
 			return;
 		}
-		box.textContent = '';
-		if ( ! pipeline ) {
-			return;
-		}
-		var i18n = cfg.i18n;
-		var heading = document.createElement( 'h2' );
-		heading.textContent = i18n.pipeline + ' #' + pipeline.number;
-		box.appendChild( heading );
-		var stateText = i18n.states[ pipeline.state ] || pipeline.state;
-		var status = row( box, i18n.status, stateText );
-		status.className = 's8w-status s8w-status-' + pipeline.state;
-		if ( pipeline.started ) {
-			row( box, i18n.startedAt, pipeline.started );
-		}
-		if ( pipeline.finished ) {
-			row( box, i18n.finishedAt, pipeline.finished );
-		}
-		if ( /^https?:\/\//.test( pipeline.url ) ) {
-			var p = document.createElement( 'p' );
-			var a = document.createElement( 'a' );
-			a.href = pipeline.url;
-			a.target = '_blank';
-			a.rel = 'noopener noreferrer';
-			a.textContent = i18n.viewPipeline;
-			p.appendChild( a );
-			box.appendChild( p );
-		}
-		if ( cancel ) {
-			cancel.hidden = ! pipeline.active;
-		}
-		if ( deploy ) {
-			deploy.disabled = pipeline.active;
+		if ( active && '' === box.textContent ) {
+			showMessage( cfg.i18n.inProgress, 'info' );
+		} else if ( ! active && ( cfg.i18n.inProgress === box.textContent || cfg.i18n.started === box.textContent ) ) {
+			showMessage( '', 'info' );
 		}
 	}
 
@@ -196,7 +163,6 @@
 
 	function initDeployment() {
 		var deploy = el( 's8w-deploy' );
-		var cancel = el( 's8w-cancel' );
 		if ( ! deploy ) {
 			return;
 		}
@@ -245,22 +211,6 @@
 				deploy.disabled = false;
 			} );
 		} );
-
-		if ( cancel ) {
-			cancel.addEventListener( 'click', function () {
-				if ( ! window.confirm( cfg.i18n.confirmCancel ) ) {
-					return;
-				}
-				cancel.disabled = true;
-				post( 'shift8_woodpecker_cancel' ).then( function ( result ) {
-					handle( result, apply );
-				} ).catch( function () {
-					showMessage( cfg.i18n.requestFailed, 'error' );
-				} ).then( function () {
-					cancel.disabled = false;
-				} );
-			} );
-		}
 	}
 
 	function initSettings() {

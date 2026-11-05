@@ -203,30 +203,6 @@ class DeploymentTest extends TestCase {
 		$this->assertFalse( $result['active'] );
 	}
 
-	public function testCancelTargetsTrackedPipeline(): void {
-		Env::$options[ Deployment::STATE_OPTION ] = array(
-			'number' => 77,
-			'status' => 'running',
-		);
-		Env::queue( 200, array() );
-		Env::queue(
-			200,
-			array(
-				'number' => 77,
-				'status' => 'killed',
-			)
-		);
-
-		$result = $this->deployment()->cancel();
-
-		$this->assertStringEndsWith( '/pipelines/77/cancel', Env::$requests[0]['url'] );
-		$this->assertSame( 'cancelled', $result['state'] );
-	}
-
-	public function testCancelWithoutTrackedPipelineFails(): void {
-		$this->assertSame( 'shift8_woodpecker_nothing_to_cancel', $this->deployment()->cancel()->get_error_code() );
-	}
-
 	public function testDescribeContainsNoSecrets(): void {
 		Env::$options[ Deployment::STATE_OPTION ] = array(
 			'number'   => 5,
@@ -238,6 +214,6 @@ class DeploymentTest extends TestCase {
 		$encoded = json_encode( $this->deployment()->describe( $this->deployment()->last() ) );
 
 		$this->assertStringNotContainsString( self::TOKEN, $encoded );
-		$this->assertStringContainsString( 'https://woodpecker.example.com/repos/123/pipeline/5', str_replace( '\\/', '/', $encoded ) );
+		$this->assertArrayNotHasKey( 'url', $this->deployment()->describe( $this->deployment()->last() ) );
 	}
 }

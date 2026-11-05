@@ -110,16 +110,16 @@ class Config {
 	public function validate() {
 		$missing = array();
 		if ( '' === $this->baseUrl() ) {
-			$missing[] = __( 'Woodpecker URL', 'shift8-woodpecker' );
+			$missing[] = __( 'Woodpecker URL', 'shift8-woodpecker-ci' );
 		}
 		if ( ! $this->hasToken() ) {
-			$missing[] = __( 'SHIFT8_WOODPECKER_TOKEN constant in wp-config.php', 'shift8-woodpecker' );
+			$missing[] = __( 'SHIFT8_WOODPECKER_TOKEN constant in wp-config.php', 'shift8-woodpecker-ci' );
 		}
 		if ( $this->repoId() < 1 ) {
-			$missing[] = __( 'repository ID', 'shift8-woodpecker' );
+			$missing[] = __( 'repository ID', 'shift8-woodpecker-ci' );
 		}
 		if ( '' === $this->branch() ) {
-			$missing[] = __( 'branch', 'shift8-woodpecker' );
+			$missing[] = __( 'branch', 'shift8-woodpecker-ci' );
 		}
 		if ( array() === $missing ) {
 			return true;
@@ -128,7 +128,7 @@ class Config {
 			'shift8_woodpecker_config',
 			sprintf(
 				/* translators: %s: comma separated list of missing settings. */
-				__( 'Woodpecker is not fully configured. Missing or invalid: %s.', 'shift8-woodpecker' ),
+				__( 'Woodpecker is not fully configured. Missing or invalid: %s.', 'shift8-woodpecker-ci' ),
 				implode( ', ', $missing )
 			)
 		);

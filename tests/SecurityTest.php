@@ -57,7 +57,6 @@ class SecurityTest extends TestCase {
 		return array(
 			'deploy'     => array( 'deploy' ),
 			'status'     => array( 'status' ),
-			'cancel'     => array( 'cancel' ),
 			'test'       => array( 'test' ),
 			'schedule'   => array( 'schedule' ),
 			'unschedule' => array( 'unschedule' ),

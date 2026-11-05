@@ -1,21 +1,3 @@
-#s8w-pipeline h2 {
-	margin-bottom: 0.5em;
-}
-
 #s8w-message {
 	max-width: 700px;
-}
-
-.s8w-status-success {
-	color: #00a32a;
-}
-
-.s8w-status-failure,
-.s8w-status-cancelled {
-	color: #d63638;
-}
-
-.s8w-status-pending,
-.s8w-status-running {
-	color: #dba617;
 }

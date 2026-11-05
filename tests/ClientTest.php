@@ -91,16 +91,6 @@ class ClientTest extends TestCase {
 		$this->assertSame( 'https://woodpecker.example.com/api/repos/123/pipelines/latest', Env::$requests[0]['url'] );
 	}
 
-	public function testCancelPostsToCancelEndpoint(): void {
-		Env::queue( 200, array() );
-
-		$result = $this->client()->cancelPipeline( 42 );
-
-		$this->assertTrue( $result );
-		$this->assertSame( 'POST', Env::$requests[0]['method'] );
-		$this->assertSame( 'https://woodpecker.example.com/api/repos/123/pipelines/42/cancel', Env::$requests[0]['url'] );
-	}
-
 	public function testGetWorkflowsAcceptsObjectsAndStrings(): void {
 		Env::queue( 200, array( array( 'name' => 'wordpress-deploy' ), 'other', array( 'id' => 1 ) ) );
 
@@ -227,9 +217,5 @@ class ClientTest extends TestCase {
 		$result = $this->client()->testConnection();
 
 		$this->assertSame( 'shift8_woodpecker_auth', $result->get_error_code() );
-	}
-
-	public function testPipelineUrlIsBuiltFromConfiguredBase(): void {
-		$this->assertSame( 'https://woodpecker.example.com/repos/123/pipeline/5', $this->client()->pipelineUrl( 5 ) );
 	}
 }

@@ -32,7 +32,6 @@ class AdminPage {
 
 	public function register(): void {
 		add_action( 'admin_menu', array( $this, 'addMenu' ) );
-		add_action( 'admin_head', array( $this, 'menuIconStyle' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
 	}
 
@@ -46,7 +45,7 @@ class AdminPage {
 	public function addMenu(): void {
 		if ( empty( $GLOBALS['admin_page_hooks'][ self::PARENT_SLUG ] ) ) {
 			add_menu_page(
-				__( 'Shift8 Settings', 'shift8-woodpecker' ),
+				__( 'Shift8 Settings', 'shift8-woodpecker-ci' ),
 				'Shift8',
 				Plugin::deployCapability(),
 				self::PARENT_SLUG,
@@ -56,23 +55,29 @@ class AdminPage {
 		}
 		add_submenu_page(
 			self::PARENT_SLUG,
-			__( 'Woodpecker', 'shift8-woodpecker' ),
-			__( 'Woodpecker', 'shift8-woodpecker' ),
+			__( 'Woodpecker', 'shift8-woodpecker-ci' ),
+			__( 'Woodpecker', 'shift8-woodpecker-ci' ),
 			Plugin::deployCapability(),
 			self::SLUG,
 			array( $this, 'render' )
 		);
 	}
 
+	/**
+	 * The shared Shift8 menu icon is needed on every admin screen, so it is
+	 * attached to an empty style handle instead of echoing a <style> tag.
+	 */
 	public function menuIconStyle(): void {
-		echo '<style>.dashicons-shift8{background:url("' . esc_url( SHIFT8_WOODPECKER_PLUGIN_URL . 'img/shift8pluginicon.png' ) . '") center no-repeat;}</style>';
+		wp_register_style( 'shift8-woodpecker-menu', false, array(), SHIFT8_WOODPECKER_PLUGIN_VERSION );
+		wp_enqueue_style( 'shift8-woodpecker-menu' );
+		wp_add_inline_style( 'shift8-woodpecker-menu', '.dashicons-shift8{background:url("' . esc_url( SHIFT8_WOODPECKER_PLUGIN_URL . 'img/shift8pluginicon.png' ) . '") center no-repeat;}' );
 	}
 
 	public function renderWelcome(): void {
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'Shift8 Plugins', 'shift8-woodpecker' ); ?></h1>
-			<p><?php esc_html_e( 'Shift8 is a Toronto based web development and design company specializing in WordPress.', 'shift8-woodpecker' ); ?> <a href="https://www.shift8web.ca" target="_blank" rel="noopener noreferrer">www.shift8web.ca</a></p>
+			<h1><?php esc_html_e( 'Shift8 Plugins', 'shift8-woodpecker-ci' ); ?></h1>
+			<p><?php esc_html_e( 'Shift8 is a Toronto based web development and design company specializing in WordPress.', 'shift8-woodpecker-ci' ); ?> <a href="https://www.shift8web.ca" target="_blank" rel="noopener noreferrer">www.shift8web.ca</a></p>
 		</div>
 		<?php
 	}
@@ -84,9 +89,9 @@ class AdminPage {
 	 * @return array<string,string> Tab slug => label.
 	 */
 	private function tabs(): array {
-		$tabs = array( self::TAB_DEPLOYMENT => __( 'Deployment', 'shift8-woodpecker' ) );
+		$tabs = array( self::TAB_DEPLOYMENT => __( 'Deployment', 'shift8-woodpecker-ci' ) );
 		if ( current_user_can( Plugin::settingsCapability() ) ) {
-			$tabs[ self::TAB_SETTINGS ] = __( 'Settings', 'shift8-woodpecker' );
+			$tabs[ self::TAB_SETTINGS ] = __( 'Settings', 'shift8-woodpecker-ci' );
 		}
 		return $tabs;
 	}
@@ -101,6 +106,8 @@ class AdminPage {
 	 * @param string $hook Current admin page hook suffix.
 	 */
 	public function enqueue( string $hook ): void {
+		$this->menuIconStyle();
+
 		if ( 'shift8_page_' . self::SLUG !== $hook ) {
 			return;
 		}
@@ -109,12 +116,12 @@ class AdminPage {
 
 	public function render(): void {
 		if ( ! current_user_can( Plugin::deployCapability() ) ) {
-			wp_die( esc_html__( 'You are not allowed to access this page.', 'shift8-woodpecker' ), '', array( 'response' => 403 ) );
+			wp_die( esc_html__( 'You are not allowed to access this page.', 'shift8-woodpecker-ci' ), '', array( 'response' => 403 ) );
 		}
 		$active = $this->activeTab();
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'Shift8 Woodpecker CI', 'shift8-woodpecker' ); ?></h1>
+			<h1><?php esc_html_e( 'Shift8 Woodpecker CI', 'shift8-woodpecker-ci' ); ?></h1>
 			<h2 class="nav-tab-wrapper">
 				<?php foreach ( $this->tabs() as $slug => $label ) : ?>
 					<a href="<?php echo esc_url( self::tabUrl( $slug ) ); ?>" class="nav-tab <?php echo $slug === $active ? 'nav-tab-active' : ''; ?>"><?php echo esc_html( $label ); ?></a>

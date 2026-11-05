@@ -45,7 +45,7 @@ class Plugin {
 	}
 
 	/**
-	 * Capability required to trigger, monitor and cancel deployments.
+	 * Capability required to trigger, schedule and monitor deployments.
 	 */
 	public static function deployCapability(): string {
 		$capability = apply_filters( 'shift8_woodpecker_deploy_capability', 'manage_options' );
