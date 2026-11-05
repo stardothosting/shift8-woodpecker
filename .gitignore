@@ -1,0 +1,10 @@
+.DS_Store
+.codacy/
+svn/*
+vendor/
+composer.lock
+.phpunit.cache/
+.phpunit.result.cache
+
+#Ignore vscode AI rules
+.github/instructions/codacy.instructions.md
