@@ -1,4 +1,4 @@
-=== Shift8 Woodpecker CI ===
+=== Shift8 Deployment Manager for Woodpecker CI ===
 Contributors: shift8
 Donate link: https://www.shift8web.ca
 Tags: woodpecker, ci, deployment, shift8, push
@@ -9,17 +9,19 @@ Stable tag: 1.1.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
-Start or schedule a Woodpecker CI deployment pipeline from the WordPress admin, with a log of who did it and when. All API calls are made server-side.
+Start or schedule a Woodpecker CI deployment from the WordPress admin, with a log of who did it and when. An independent Shift8 integration, not affiliated with the Woodpecker CI project.
 
 == Description ==
 
-Shift8 Woodpecker CI lets an administrator push a staging site to production by starting a manual Woodpecker pipeline from Shift8 → Woodpecker, either immediately or at a scheduled date and time. An activity log records the WordPress user, the date/time, and how each deployment ended.
+Shift8 Deployment Manager for Woodpecker CI lets an administrator push a staging site to production by starting a manual Woodpecker pipeline from Shift8 → Woodpecker, either immediately or at a scheduled date and time. An activity log records the WordPress user, the date/time, and how each deployment ended.
+
+"Woodpecker CI" is the name of a third-party open source project. This plugin is an independent integration made by Shift8 and is not affiliated with, endorsed by or sponsored by the Woodpecker CI project.
 
 The plugin only triggers and observes the pipeline; the deployment itself is performed by your Woodpecker workflow. The API token stays on the server, is never stored in the database and is never sent to the browser. End users cannot cancel a running deployment.
 
 == Installation ==
 
-1. Upload the plugin to `/wp-content/plugins/shift8-woodpecker-ci` and activate it (on the staging site).
+1. Upload the plugin to `/wp-content/plugins/shift8-deployment-manager-for-woodpecker-ci` and activate it (on the staging site).
 2. Define the API token in `wp-config.php`. It is required and is the only way to set it:
 
 `define( 'SHIFT8_WOODPECKER_TOKEN', '...' );`

@@ -78,7 +78,7 @@ class Deployment {
 		}
 
 		if ( get_transient( self::LOCK_KEY ) ) {
-			return new \WP_Error( 'shift8_woodpecker_locked', __( 'A deployment request was just submitted. Please wait a few seconds.', 'shift8-woodpecker-ci' ) );
+			return new \WP_Error( 'shift8_woodpecker_locked', __( 'A deployment request was just submitted. Please wait a few seconds.', 'shift8-deployment-manager-for-woodpecker-ci' ) );
 		}
 
 		$current = $this->refresh();
@@ -93,7 +93,7 @@ class Deployment {
 				'shift8_woodpecker_active',
 				sprintf(
 					/* translators: 1: pipeline number, 2: pipeline status. */
-					__( 'Pipeline #%1$d is still %2$s. Wait for it to finish before starting another.', 'shift8-woodpecker-ci' ),
+					__( 'Pipeline #%1$d is still %2$s. Wait for it to finish before starting another.', 'shift8-deployment-manager-for-woodpecker-ci' ),
 					$current['number'],
 					$current['state']
 				)

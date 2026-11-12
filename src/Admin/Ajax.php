@@ -93,10 +93,10 @@ class Ajax {
 	 */
 	private function authorize( string $capability ): void {
 		if ( ! current_user_can( $capability ) ) {
-			$this->fail( __( 'You are not allowed to do that.', 'shift8-woodpecker-ci' ), 403 );
+			$this->fail( __( 'You are not allowed to do that.', 'shift8-deployment-manager-for-woodpecker-ci' ), 403 );
 		}
 		if ( ! check_ajax_referer( self::NONCE_ACTION, 'nonce', false ) ) {
-			$this->fail( __( 'Your session has expired. Reload the page and try again.', 'shift8-woodpecker-ci' ), 403 );
+			$this->fail( __( 'Your session has expired. Reload the page and try again.', 'shift8-deployment-manager-for-woodpecker-ci' ), 403 );
 		}
 	}
 

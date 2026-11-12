@@ -116,7 +116,7 @@ class ActivityLog {
 		foreach ( $rows as $row ) {
 			$out[] = array(
 				'date'    => $this->format( (string) $row['created_at'] ),
-				'user'    => '' !== (string) $row['user_login'] ? (string) $row['user_login'] : __( 'system', 'shift8-woodpecker-ci' ),
+				'user'    => '' !== (string) $row['user_login'] ? (string) $row['user_login'] : __( 'system', 'shift8-deployment-manager-for-woodpecker-ci' ),
 				'action'  => self::label( (string) $row['event'] ),
 				'details' => $this->details( $row ),
 			);
@@ -126,14 +126,14 @@ class ActivityLog {
 
 	public static function label( string $event ): string {
 		$labels = array(
-			self::DEPLOY             => __( 'Started deployment', 'shift8-woodpecker-ci' ),
-			self::DEPLOY_FINISHED    => __( 'Deployment finished', 'shift8-woodpecker-ci' ),
-			self::DEPLOY_FAILED      => __( 'Deployment could not be started', 'shift8-woodpecker-ci' ),
-			self::SCHEDULED          => __( 'Scheduled deployment', 'shift8-woodpecker-ci' ),
-			self::SCHEDULE_CANCELLED => __( 'Cancelled scheduled deployment', 'shift8-woodpecker-ci' ),
-			self::SCHEDULED_RUN      => __( 'Scheduled deployment started', 'shift8-woodpecker-ci' ),
-			self::SCHEDULED_FAILED   => __( 'Scheduled deployment could not be started', 'shift8-woodpecker-ci' ),
-			self::SCHEDULED_MISSED   => __( 'Scheduled deployment missed', 'shift8-woodpecker-ci' ),
+			self::DEPLOY             => __( 'Started deployment', 'shift8-deployment-manager-for-woodpecker-ci' ),
+			self::DEPLOY_FINISHED    => __( 'Deployment finished', 'shift8-deployment-manager-for-woodpecker-ci' ),
+			self::DEPLOY_FAILED      => __( 'Deployment could not be started', 'shift8-deployment-manager-for-woodpecker-ci' ),
+			self::SCHEDULED          => __( 'Scheduled deployment', 'shift8-deployment-manager-for-woodpecker-ci' ),
+			self::SCHEDULE_CANCELLED => __( 'Cancelled scheduled deployment', 'shift8-deployment-manager-for-woodpecker-ci' ),
+			self::SCHEDULED_RUN      => __( 'Scheduled deployment started', 'shift8-deployment-manager-for-woodpecker-ci' ),
+			self::SCHEDULED_FAILED   => __( 'Scheduled deployment could not be started', 'shift8-deployment-manager-for-woodpecker-ci' ),
+			self::SCHEDULED_MISSED   => __( 'Scheduled deployment missed', 'shift8-deployment-manager-for-woodpecker-ci' ),
 		);
 		return $labels[ $event ] ?? $event;
 	}
@@ -148,7 +148,7 @@ class ActivityLog {
 		}
 		if ( ! empty( $row['scheduled_for'] ) ) {
 			/* translators: %s: date and time. */
-			$parts[] = sprintf( __( 'for %s', 'shift8-woodpecker-ci' ), $this->format( (string) $row['scheduled_for'] ) );
+			$parts[] = sprintf( __( 'for %s', 'shift8-deployment-manager-for-woodpecker-ci' ), $this->format( (string) $row['scheduled_for'] ) );
 		}
 		if ( '' !== (string) $row['details'] ) {
 			$parts[] = (string) $row['details'];

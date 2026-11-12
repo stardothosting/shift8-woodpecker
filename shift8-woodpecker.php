@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: Shift8 Woodpecker CI
+ * Plugin Name: Shift8 Deployment Manager for Woodpecker CI
  * Plugin URI: https://github.com/stardothosting/shift8-woodpecker
- * Description: Trigger and monitor Woodpecker CI deployments from the WordPress admin, server-side.
+ * Description: Start, schedule and log Woodpecker CI deployments from the WordPress admin. Independent integration, not affiliated with the Woodpecker CI project.
  * Version: 1.1.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
@@ -10,7 +10,7 @@
  * Author URI: https://www.shift8web.ca
  * License: GPLv3
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
- * Text Domain: shift8-woodpecker-ci
+ * Text Domain: shift8-deployment-manager-for-woodpecker-ci
  *
  * @package Shift8\Woodpecker
  */

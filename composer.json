@@ -41,7 +41,7 @@
     "scripts": {
         "test": "phpunit",
         "phpcs": "phpcs",
-        "phpstan": "phpstan analyse --memory-limit=512M",
+        "phpstan": "phpstan analyse --memory-limit=1G",
         "check": [
             "@phpcs",
             "@phpstan",

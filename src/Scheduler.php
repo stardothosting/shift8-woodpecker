@@ -53,7 +53,7 @@ class Scheduler {
 	public function parse( string $input ) {
 		$date = preg_match( '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/', $input ) ? \DateTimeImmutable::createFromFormat( 'Y-m-d\TH:i', $input, wp_timezone() ) : false;
 		if ( false === $date ) {
-			return new \WP_Error( 'shift8_woodpecker_schedule_invalid', __( 'Choose a valid date and time.', 'shift8-woodpecker-ci' ) );
+			return new \WP_Error( 'shift8_woodpecker_schedule_invalid', __( 'Choose a valid date and time.', 'shift8-deployment-manager-for-woodpecker-ci' ) );
 		}
 		return $date->getTimestamp();
 	}
@@ -72,17 +72,17 @@ class Scheduler {
 		}
 		$now = time();
 		if ( $timestamp < $now + self::MIN_LEAD ) {
-			return new \WP_Error( 'shift8_woodpecker_schedule_past', __( 'Choose a time at least a minute in the future.', 'shift8-woodpecker-ci' ) );
+			return new \WP_Error( 'shift8_woodpecker_schedule_past', __( 'Choose a time at least a minute in the future.', 'shift8-deployment-manager-for-woodpecker-ci' ) );
 		}
 		if ( $timestamp > $now + self::MAX_LEAD ) {
-			return new \WP_Error( 'shift8_woodpecker_schedule_far', __( 'Deployments can be scheduled at most 30 days ahead.', 'shift8-woodpecker-ci' ) );
+			return new \WP_Error( 'shift8_woodpecker_schedule_far', __( 'Deployments can be scheduled at most 30 days ahead.', 'shift8-deployment-manager-for-woodpecker-ci' ) );
 		}
 		if ( null !== $this->current() ) {
-			return new \WP_Error( 'shift8_woodpecker_schedule_exists', __( 'A deployment is already scheduled. Cancel it first to schedule another.', 'shift8-woodpecker-ci' ) );
+			return new \WP_Error( 'shift8_woodpecker_schedule_exists', __( 'A deployment is already scheduled. Cancel it first to schedule another.', 'shift8-deployment-manager-for-woodpecker-ci' ) );
 		}
 
 		if ( false === wp_schedule_single_event( $timestamp, self::HOOK, array( $timestamp ) ) ) {
-			return new \WP_Error( 'shift8_woodpecker_schedule_failed', __( 'WordPress could not schedule the deployment.', 'shift8-woodpecker-ci' ) );
+			return new \WP_Error( 'shift8_woodpecker_schedule_failed', __( 'WordPress could not schedule the deployment.', 'shift8-deployment-manager-for-woodpecker-ci' ) );
 		}
 		update_option(
 			self::OPTION,
@@ -104,7 +104,7 @@ class Scheduler {
 	public function cancel( int $user_id ) {
 		$pending = $this->current();
 		if ( null === $pending ) {
-			return new \WP_Error( 'shift8_woodpecker_nothing_scheduled', __( 'There is no scheduled deployment to cancel.', 'shift8-woodpecker-ci' ) );
+			return new \WP_Error( 'shift8_woodpecker_nothing_scheduled', __( 'There is no scheduled deployment to cancel.', 'shift8-deployment-manager-for-woodpecker-ci' ) );
 		}
 		wp_unschedule_event( $pending['timestamp'], self::HOOK, array( $pending['timestamp'] ) );
 		delete_option( self::OPTION );
@@ -130,13 +130,13 @@ class Scheduler {
 
 		// Authorization happened when scheduling; make sure it still holds.
 		if ( ! user_can( $user_id, Plugin::deployCapability() ) ) {
-			$this->activity->record( $user_id, ActivityLog::SCHEDULED_FAILED, $context + array( 'details' => __( 'The user who scheduled this is no longer authorized.', 'shift8-woodpecker-ci' ) ) );
+			$this->activity->record( $user_id, ActivityLog::SCHEDULED_FAILED, $context + array( 'details' => __( 'The user who scheduled this is no longer authorized.', 'shift8-deployment-manager-for-woodpecker-ci' ) ) );
 			return;
 		}
 
 		$grace = (int) apply_filters( 'shift8_woodpecker_schedule_grace', self::DEFAULT_GRACE );
 		if ( time() > $pending['timestamp'] + $grace ) {
-			$this->activity->record( $user_id, ActivityLog::SCHEDULED_MISSED, $context + array( 'details' => __( 'WP-Cron did not run on time.', 'shift8-woodpecker-ci' ) ) );
+			$this->activity->record( $user_id, ActivityLog::SCHEDULED_MISSED, $context + array( 'details' => __( 'WP-Cron did not run on time.', 'shift8-deployment-manager-for-woodpecker-ci' ) ) );
 			return;
 		}
 

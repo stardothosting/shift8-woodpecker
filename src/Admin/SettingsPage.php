@@ -58,7 +58,7 @@ class SettingsPage {
 		$url_in = isset( $input['url'] ) ? (string) $input['url'] : '';
 		$url    = Config::normalizeUrl( $url_in );
 		if ( '' === $url && '' !== trim( $url_in ) ) {
-			$this->error( 'shift8_woodpecker_url', __( 'The Woodpecker URL must be a valid http(s) URL without credentials. The previous value was kept.', 'shift8-woodpecker-ci' ) );
+			$this->error( 'shift8_woodpecker_url', __( 'The Woodpecker URL must be a valid http(s) URL without credentials. The previous value was kept.', 'shift8-deployment-manager-for-woodpecker-ci' ) );
 			$url = isset( $old['url'] ) ? (string) $old['url'] : '';
 		}
 		$clean['url'] = $url;
@@ -67,7 +67,7 @@ class SettingsPage {
 		if ( '' === $repo_in || ( ctype_digit( $repo_in ) && (int) $repo_in > 0 ) ) {
 			$clean['repo_id'] = '' === $repo_in ? '' : (int) $repo_in;
 		} else {
-			$this->error( 'shift8_woodpecker_repo', __( 'The repository ID must be a positive whole number. The previous value was kept.', 'shift8-woodpecker-ci' ) );
+			$this->error( 'shift8_woodpecker_repo', __( 'The repository ID must be a positive whole number. The previous value was kept.', 'shift8-deployment-manager-for-woodpecker-ci' ) );
 			$clean['repo_id'] = isset( $old['repo_id'] ) ? $old['repo_id'] : '';
 		}
 
@@ -75,7 +75,7 @@ class SettingsPage {
 			$value = isset( $input[ $key ] ) ? trim( (string) $input[ $key ] ) : '';
 			if ( '' !== $value && '' === Config::cleanRef( $value ) ) {
 				/* translators: %s: setting name. */
-				$this->error( 'shift8_woodpecker_' . $key, sprintf( __( 'The %s may only contain letters, numbers, dots, dashes, underscores and slashes. The previous value was kept.', 'shift8-woodpecker-ci' ), $key ) );
+				$this->error( 'shift8_woodpecker_' . $key, sprintf( __( 'The %s may only contain letters, numbers, dots, dashes, underscores and slashes. The previous value was kept.', 'shift8-deployment-manager-for-woodpecker-ci' ), $key ) );
 				$value = isset( $old[ $key ] ) ? (string) $old[ $key ] : '';
 			}
 			$clean[ $key ] = $value;
@@ -99,7 +99,7 @@ class SettingsPage {
 
 	public function render(): void {
 		if ( ! current_user_can( Plugin::settingsCapability() ) ) {
-			wp_die( esc_html__( 'You are not allowed to access this page.', 'shift8-woodpecker-ci' ), '', array( 'response' => 403 ) );
+			wp_die( esc_html__( 'You are not allowed to access this page.', 'shift8-deployment-manager-for-woodpecker-ci' ), '', array( 'response' => 403 ) );
 		}
 		$stored = get_option( Config::OPTION, array() );
 		$stored = is_array( $stored ) ? $stored : array();
@@ -109,21 +109,21 @@ class SettingsPage {
 				<?php settings_fields( self::GROUP ); ?>
 				<table class="form-table" role="presentation">
 					<?php
-					$this->textRow( 'url', __( 'Woodpecker URL', 'shift8-woodpecker-ci' ), $this->config->baseUrl(), 'https://woodpecker.example.com', 'url' );
-					$this->textRow( 'repo_id', __( 'Repository ID', 'shift8-woodpecker-ci' ), (string) ( $this->config->repoId() ?: '' ), '123', 'text' );
-					$this->textRow( 'branch', __( 'Branch', 'shift8-woodpecker-ci' ), $this->config->branch(), 'production', 'text' );
-					$this->textRow( 'workflow', __( 'Workflow (optional)', 'shift8-woodpecker-ci' ), $this->config->workflow(), 'wordpress-deploy', 'text' );
+					$this->textRow( 'url', __( 'Woodpecker URL', 'shift8-deployment-manager-for-woodpecker-ci' ), $this->config->baseUrl(), 'https://woodpecker.example.com', 'url' );
+					$this->textRow( 'repo_id', __( 'Repository ID', 'shift8-deployment-manager-for-woodpecker-ci' ), (string) ( $this->config->repoId() ?: '' ), '123', 'text' );
+					$this->textRow( 'branch', __( 'Branch', 'shift8-deployment-manager-for-woodpecker-ci' ), $this->config->branch(), 'production', 'text' );
+					$this->textRow( 'workflow', __( 'Workflow (optional)', 'shift8-deployment-manager-for-woodpecker-ci' ), $this->config->workflow(), 'wordpress-deploy', 'text' );
 					$this->tokenRow();
 					?>
 					<tr>
-						<th scope="row"><label for="s8w-message"><?php esc_html_e( 'Deployment message', 'shift8-woodpecker-ci' ); ?></label></th>
+						<th scope="row"><label for="s8w-message"><?php esc_html_e( 'Deployment message', 'shift8-deployment-manager-for-woodpecker-ci' ); ?></label></th>
 						<td>
 							<input type="text" id="s8w-message" class="regular-text" maxlength="200" name="<?php echo esc_attr( Config::OPTION ); ?>[message]" value="<?php echo esc_attr( isset( $stored['message'] ) ? (string) $stored['message'] : '' ); ?>" placeholder="<?php echo esc_attr( Config::DEFAULT_MESSAGE ); ?>" />
-							<p class="description"><?php esc_html_e( 'Optional. Placeholders: {user}, {site}.', 'shift8-woodpecker-ci' ); ?></p>
+							<p class="description"><?php esc_html_e( 'Optional. Placeholders: {user}, {site}.', 'shift8-deployment-manager-for-woodpecker-ci' ); ?></p>
 						</td>
 					</tr>
 					<tr>
-						<th scope="row"><label for="s8w-poll"><?php esc_html_e( 'Status polling interval (seconds)', 'shift8-woodpecker-ci' ); ?></label></th>
+						<th scope="row"><label for="s8w-poll"><?php esc_html_e( 'Status polling interval (seconds)', 'shift8-deployment-manager-for-woodpecker-ci' ); ?></label></th>
 						<td>
 							<input type="number" id="s8w-poll" class="small-text" min="<?php echo (int) Config::MIN_POLL_INTERVAL; ?>" max="<?php echo (int) Config::MAX_POLL_INTERVAL; ?>" name="<?php echo esc_attr( Config::OPTION ); ?>[poll_interval]" value="<?php echo (int) $this->config->pollInterval(); ?>" />
 						</td>
@@ -152,12 +152,12 @@ class SettingsPage {
 	private function tokenRow(): void {
 		?>
 		<tr>
-			<th scope="row"><?php esc_html_e( 'API token', 'shift8-woodpecker-ci' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'API token', 'shift8-deployment-manager-for-woodpecker-ci' ); ?></th>
 			<td>
 				<?php if ( $this->config->hasToken() ) : ?>
-					<p><?php esc_html_e( 'Token is configured in wp-config.php.', 'shift8-woodpecker-ci' ); ?></p>
+					<p><?php esc_html_e( 'Token is configured in wp-config.php.', 'shift8-deployment-manager-for-woodpecker-ci' ); ?></p>
 				<?php else : ?>
-					<p><strong><?php esc_html_e( 'No token configured.', 'shift8-woodpecker-ci' ); ?></strong> <?php esc_html_e( 'The token is never stored in the database. Add this line to wp-config.php:', 'shift8-woodpecker-ci' ); ?></p>
+					<p><strong><?php esc_html_e( 'No token configured.', 'shift8-deployment-manager-for-woodpecker-ci' ); ?></strong> <?php esc_html_e( 'The token is never stored in the database. Add this line to wp-config.php:', 'shift8-deployment-manager-for-woodpecker-ci' ); ?></p>
 					<p><code>define( 'SHIFT8_WOODPECKER_TOKEN', 'your-woodpecker-token' );</code></p>
 				<?php endif; ?>
 			</td>
@@ -167,7 +167,7 @@ class SettingsPage {
 
 	private function lockedNote( bool $locked ): void {
 		if ( $locked ) {
-			echo '<p class="description">' . esc_html__( 'Managed by wp-config.php.', 'shift8-woodpecker-ci' ) . '</p>';
+			echo '<p class="description">' . esc_html__( 'Managed by wp-config.php.', 'shift8-deployment-manager-for-woodpecker-ci' ) . '</p>';
 		}
 	}
 

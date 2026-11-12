@@ -67,7 +67,7 @@ assert_release_tree() {
         exit 1
     fi
 
-    if ! grep -qiE "^[[:space:]]*\*[[:space:]]*Stable tag:[[:space:]]*$VERSION[[:space:]]*$" "$target/readme.txt"
+    if ! grep -qiE "^[[:space:]]*(\*[[:space:]]*)?Stable tag:[[:space:]]*$VERSION[[:space:]]*$" "$target/readme.txt"
     then
         echo "ERROR: $label/readme.txt Stable tag does not match $VERSION"
         exit 1
@@ -97,7 +97,7 @@ then
     exit 1
 fi
 
-if ! grep -qiE "^[[:space:]]*\*[[:space:]]*Stable tag:[[:space:]]*$VERSION[[:space:]]*$" readme.txt
+if ! grep -qiE "^[[:space:]]*(\*[[:space:]]*)?Stable tag:[[:space:]]*$VERSION[[:space:]]*$" readme.txt
 then
     echo "ERROR: readme.txt Stable tag does not match $VERSION"
     exit 1

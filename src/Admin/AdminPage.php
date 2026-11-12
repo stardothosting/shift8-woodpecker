@@ -45,7 +45,7 @@ class AdminPage {
 	public function addMenu(): void {
 		if ( empty( $GLOBALS['admin_page_hooks'][ self::PARENT_SLUG ] ) ) {
 			add_menu_page(
-				__( 'Shift8 Settings', 'shift8-woodpecker-ci' ),
+				__( 'Shift8 Settings', 'shift8-deployment-manager-for-woodpecker-ci' ),
 				'Shift8',
 				Plugin::deployCapability(),
 				self::PARENT_SLUG,
@@ -55,8 +55,8 @@ class AdminPage {
 		}
 		add_submenu_page(
 			self::PARENT_SLUG,
-			__( 'Woodpecker', 'shift8-woodpecker-ci' ),
-			__( 'Woodpecker', 'shift8-woodpecker-ci' ),
+			__( 'Woodpecker', 'shift8-deployment-manager-for-woodpecker-ci' ),
+			__( 'Woodpecker', 'shift8-deployment-manager-for-woodpecker-ci' ),
 			Plugin::deployCapability(),
 			self::SLUG,
 			array( $this, 'render' )
@@ -76,8 +76,8 @@ class AdminPage {
 	public function renderWelcome(): void {
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'Shift8 Plugins', 'shift8-woodpecker-ci' ); ?></h1>
-			<p><?php esc_html_e( 'Shift8 is a Toronto based web development and design company specializing in WordPress.', 'shift8-woodpecker-ci' ); ?> <a href="https://www.shift8web.ca" target="_blank" rel="noopener noreferrer">www.shift8web.ca</a></p>
+			<h1><?php esc_html_e( 'Shift8 Plugins', 'shift8-deployment-manager-for-woodpecker-ci' ); ?></h1>
+			<p><?php esc_html_e( 'Shift8 is a Toronto based web development and design company specializing in WordPress.', 'shift8-deployment-manager-for-woodpecker-ci' ); ?> <a href="https://www.shift8web.ca" target="_blank" rel="noopener noreferrer">www.shift8web.ca</a></p>
 		</div>
 		<?php
 	}
@@ -89,9 +89,9 @@ class AdminPage {
 	 * @return array<string,string> Tab slug => label.
 	 */
 	private function tabs(): array {
-		$tabs = array( self::TAB_DEPLOYMENT => __( 'Deployment', 'shift8-woodpecker-ci' ) );
+		$tabs = array( self::TAB_DEPLOYMENT => __( 'Deployment', 'shift8-deployment-manager-for-woodpecker-ci' ) );
 		if ( current_user_can( Plugin::settingsCapability() ) ) {
-			$tabs[ self::TAB_SETTINGS ] = __( 'Settings', 'shift8-woodpecker-ci' );
+			$tabs[ self::TAB_SETTINGS ] = __( 'Settings', 'shift8-deployment-manager-for-woodpecker-ci' );
 		}
 		return $tabs;
 	}
@@ -116,12 +116,12 @@ class AdminPage {
 
 	public function render(): void {
 		if ( ! current_user_can( Plugin::deployCapability() ) ) {
-			wp_die( esc_html__( 'You are not allowed to access this page.', 'shift8-woodpecker-ci' ), '', array( 'response' => 403 ) );
+			wp_die( esc_html__( 'You are not allowed to access this page.', 'shift8-deployment-manager-for-woodpecker-ci' ), '', array( 'response' => 403 ) );
 		}
 		$active = $this->activeTab();
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'Shift8 Woodpecker CI', 'shift8-woodpecker-ci' ); ?></h1>
+			<h1><?php esc_html_e( 'Shift8 Deployment Manager', 'shift8-deployment-manager-for-woodpecker-ci' ); ?></h1>
 			<h2 class="nav-tab-wrapper">
 				<?php foreach ( $this->tabs() as $slug => $label ) : ?>
 					<a href="<?php echo esc_url( self::tabUrl( $slug ) ); ?>" class="nav-tab <?php echo $slug === $active ? 'nav-tab-active' : ''; ?>"><?php echo esc_html( $label ); ?></a>

@@ -1,4 +1,6 @@
-# Shift8 Woodpecker CI
+# Shift8 Deployment Manager for Woodpecker CI
+
+> Independent integration by Shift8; not affiliated with the Woodpecker CI project.
 
 Start, schedule and monitor a [Woodpecker CI](https://woodpecker-ci.org) deployment from the WordPress admin. It replaces the WordPress → Jenkins build-token trigger of [shift8-jenkins](https://github.com/stardothosting/shift8-jenkins).
 
@@ -24,7 +26,7 @@ The plugin only starts and observes a pipeline. It contains no deployment logic 
 
 ## Installation
 
-Copy the plugin to `wp-content/plugins/shift8-woodpecker-ci` and activate it. There are no runtime dependencies (`vendor/` is development-only and is not shipped). Activation creates the activity-log table `{prefix}shift8_woodpecker_log`.
+Copy the plugin to `wp-content/plugins/shift8-deployment-manager-for-woodpecker-ci` and activate it. There are no runtime dependencies (`vendor/` is development-only and is not shipped). Activation creates the activity-log table `{prefix}shift8_woodpecker_log`.
 
 Install and activate it on the **staging** site only. See *Staging → production caveats* below.
 
@@ -139,7 +141,7 @@ Tests need no WordPress install and never contact a real server. See [docs/testi
 
 When bumping the version, update `shift8-woodpecker.php` (header and `SHIFT8_WOODPECKER_PLUGIN_VERSION`), `readme.txt` (Stable tag, changelog) and `CHANGELOG.md`.
 
-**WordPress.org slug:** the directory assigned the slug `shift8-woodpecker-ci`, so the `Text Domain` header and every translation call use `shift8-woodpecker-ci` (the automated scan rejects a mismatch) and the submission zip's top-level folder is `shift8-woodpecker-ci/`. Internal identifiers (menu slug, option names, constants, handles) keep the `shift8-woodpecker` / `shift8_woodpecker` prefix. If the slug is ever changed again, update the text domain in `shift8-woodpecker.php`, `src/` and `phpcs.xml.dist`.
+**WordPress.org name and slug:** the review team required a distinctive name that does not lead with the third-party project name, so the plugin is "Shift8 Deployment Manager for Woodpecker CI" with slug `shift8-deployment-manager-for-woodpecker-ci` (an earlier submission used `shift8-woodpecker-ci`). The `Text Domain` header and every translation call must equal the slug, and the submission zip's top-level folder must be the slug. Internal identifiers (menu slug, option names, constants, handles, main file name) keep the `shift8-woodpecker` / `shift8_woodpecker` prefix. If the slug changes again, update the text domain in `shift8-woodpecker.php`, `src/` and `phpcs.xml.dist`, and keep the "not affiliated" wording.
 
 ## Troubleshooting
 
