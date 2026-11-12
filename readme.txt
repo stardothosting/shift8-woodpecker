@@ -63,6 +63,10 @@ Users with the `manage_options` capability by default, filterable with `shift8_w
 
 In the activity log on the Deployment tab: a "Started deployment" line and, when the pipeline stops, a "Deployment finished" line with the final status. It is recorded when the page next checks the pipeline, so it may appear at your next visit if nobody was watching.
 
+= Does the plugin need a system cron? =
+
+Only for scheduled deployments, which rely on WP-Cron. A system cron running `wp-cron.php` every minute with `DISABLE_WP_CRON` set makes schedules reliable.
+
 = Does it work on the production site too? =
 
 Install it on staging only. A staging-to-production database copy carries the plugin's saved settings, schedule and log with it.
@@ -70,6 +74,7 @@ Install it on staging only. A staging-to-production database copy carries the pl
 == Changelog ==
 
 = 1.1.0 =
+* Renamed to "Shift8 Deployment Manager for Woodpecker CI" after WordPress.org review, with a not-affiliated notice
 * Single Shift8 → Woodpecker page with Deployment and Settings tabs
 * Schedule a deployment for a later date/time (site timezone, up to 30 days ahead)
 * Activity log of which user started or scheduled a deployment, when, and the final status

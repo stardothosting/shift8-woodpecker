@@ -1,6 +1,18 @@
 # Shift8 Deployment Manager for Woodpecker CI
 
+* Contributors: shift8
+* Donate link: https://www.shift8web.ca
+* Tags: woodpecker, ci, deployment, shift8, push
+* Requires at least: 6.0
+* Tested up to: 7.1
+* Requires PHP: 7.4
+* Stable tag: 1.1.0
+* License: GPLv3
+* License URI: http://www.gnu.org/licenses/gpl-3.0.html
+
 > Independent integration by Shift8; not affiliated with the Woodpecker CI project.
+
+Also published on WordPress.org: [shift8-deployment-manager-for-woodpecker-ci](https://wordpress.org/plugins/shift8-deployment-manager-for-woodpecker-ci). `readme.txt` is the WordPress.org-format readme; keep it in sync with this file (see *Release*).
 
 Start, schedule and monitor a [Woodpecker CI](https://woodpecker-ci.org) deployment from the WordPress admin. It replaces the WordPress → Jenkins build-token trigger of [shift8-jenkins](https://github.com/stardothosting/shift8-jenkins).
 
@@ -120,6 +132,23 @@ The deploy script copies the staging database to production, so plugin data stor
 - Do not rely on the log table surviving on production; consider excluding `{prefix}shift8_woodpecker_log` and the `shift8_woodpecker_*` options from the database sync. This has **not** been verified against the production deploy script.
 - Do not activate the plugin on production with the same constants, or it could trigger deployments from there.
 
+## External services
+
+The plugin connects to one external service: the Woodpecker CI server whose address you configure (normally self-hosted). It does not contact Shift8 or any third party.
+
+- **Test Woodpecker Connection** requests `/api/user`, `/api/repos/{id}` and the repository's workflow list.
+- **Starting a deployment** (immediate or scheduled) sends a request to `/api/repos/{id}/pipelines` with the configured branch, the optional workflow name, an empty variables object and a short message (default "WordPress production deployment by {display name of the WordPress user}").
+- **While a deployment runs** it requests `/api/repos/{id}/pipelines/{number}` to read the status.
+
+Every request carries the API token as a bearer token in the `Authorization` header. The token is read only from `wp-config.php`. "Woodpecker CI" is a third-party project ([woodpecker-ci.org](https://woodpecker-ci.org)); terms and privacy for your server are those of whoever hosts it.
+
+## FAQ
+
+- **Does the plugin deploy anything itself?** No. It asks Woodpecker to start a pipeline; everything else is up to your pipeline.
+- **Who can deploy?** Users with `manage_options` by default, filterable with `shift8_woodpecker_deploy_capability`. Settings always require `manage_options`.
+- **Where is the result of a deployment?** In the activity log: *Started deployment* and, when the pipeline stops, *Deployment finished* with the final status. It is recorded when the page next checks the pipeline.
+- **Does it work on the production site too?** Install it on staging only (see *Staging → production caveats*).
+
 ## Limitations
 
 - The finish of a deployment is recorded when the pipeline status is next read: by the open Deployment tab (polling) or when the tab is next loaded. If nobody is watching, the *Deployment finished* line appears at the next visit, with that time.
@@ -139,7 +168,7 @@ Tests need no WordPress install and never contact a real server. See [docs/testi
 
 `./push.sh "message" 1.1.0` follows the other Shift8 plugins: commits and pushes to git (`master`), then syncs `trunk`, `assets` and a version tag into `svn/` and commits with `svn ci`. It checks that the plugin header `Version` and the `readme.txt` `Stable tag` match the version, and `push.exclude` keeps `tests/`, `docs/`, `vendor/`, `composer.*`, the phpcs/phpstan/phpunit configs and repository-only files out of the WordPress.org package. Check out the WordPress.org SVN repository into `svn/` first. The icons and banners in `assets/` are the shared Shift8 artwork.
 
-When bumping the version, update `shift8-woodpecker.php` (header and `SHIFT8_WOODPECKER_PLUGIN_VERSION`), `readme.txt` (Stable tag, changelog) and `CHANGELOG.md`.
+When bumping the version, update `shift8-woodpecker.php` (header and `SHIFT8_WOODPECKER_PLUGIN_VERSION`), `readme.txt` (Stable tag, changelog) and `CHANGELOG.md`. `README.md` and `readme.txt` describe the same plugin in different formats (Markdown vs. WordPress.org readme syntax), so update both together: header fields (tested up to, stable tag), description, external services, FAQ and changelog.
 
 **WordPress.org name and slug:** the review team required a distinctive name that does not lead with the third-party project name, so the plugin is "Shift8 Deployment Manager for Woodpecker CI" with slug `shift8-deployment-manager-for-woodpecker-ci` (an earlier submission used `shift8-woodpecker-ci`). The `Text Domain` header and every translation call must equal the slug, and the submission zip's top-level folder must be the slug. Internal identifiers (menu slug, option names, constants, handles, main file name) keep the `shift8-woodpecker` / `shift8_woodpecker` prefix. If the slug changes again, update the text domain in `shift8-woodpecker.php`, `src/` and `phpcs.xml.dist`, and keep the "not affiliated" wording.
 

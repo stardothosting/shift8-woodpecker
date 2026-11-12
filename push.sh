@@ -111,7 +111,7 @@ then
     git commit -m "$MESSAGE"
 fi
 
-git push origin master
+git push origin main
 
 # Sync Git working tree -> SVN trunk.
 # --delete removes stale SVN working-copy files which no longer exist in Git.
